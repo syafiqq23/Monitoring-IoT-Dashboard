@@ -11,7 +11,7 @@ class DashboardController extends Controller
     {
         return view('dashboard.index', [
             'title' => 'Dashboard',
-            'controls' => Control::latest()->paginate(5),
+            'controls' => \App\Models\Monitoring::latest()->paginate(5),
         ]);
     }
 }

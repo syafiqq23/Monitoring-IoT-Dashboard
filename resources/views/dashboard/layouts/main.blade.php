@@ -7,7 +7,7 @@
     <meta content="" name="keywords">
     <meta content="" name="description">
     
-    <title>lelemon | {{ $title }}</title>
+    <title>Dashboard Monitoring</title>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
 
@@ -72,13 +72,11 @@
         @include('dashboard.layouts.header')
 
         @yield('container')
-
-        @include('dashboard.layouts.footer')
+        
       </div>
       {{-- Content End --}}
 
       <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-warning btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
     
 

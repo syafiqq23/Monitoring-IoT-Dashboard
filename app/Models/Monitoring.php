@@ -9,13 +9,13 @@ class Monitoring extends Model
 {
     use HasFactory;
 
-    protected $table = 'monitorings';
+    protected $table = 'sensor_data';
     protected $primaryKey = 'id';
-    protected $fillable = [
-        'temperature',
-        'turbidity',
-        'ph',
-        'dissolved_oxygen',
-        'kualitas_air',
-    ];
+    // protected $fillable = [
+    //     'temperature',
+    //     'turbidity',
+    //     'ph',
+    //     'dissolved_oxygen',
+    //     'kualitas_air',
+    // ];
 }
