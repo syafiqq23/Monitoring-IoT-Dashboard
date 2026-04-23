@@ -7,28 +7,19 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
-
 @keyframes pulse-danger {
-  0% { box-shadow: 0 0 0 0 rgba(220,53,69,0.6); }
-  70% { box-shadow: 0 0 10px 10px rgba(220,53,69,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(220,53,69,0.6); }
+  70%  { box-shadow: 0 0 10px 10px rgba(220,53,69,0); }
   100% { box-shadow: 0 0 0 0 rgba(220,53,69,0); }
 }
-
 @keyframes pulse-warning {
-  0% { box-shadow: 0 0 0 0 rgba(255,193,7,0.6); }
-  70% { box-shadow: 0 0 10px 10px rgba(255,193,7,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(255,193,7,0.6); }
+  70%  { box-shadow: 0 0 10px 10px rgba(255,193,7,0); }
   100% { box-shadow: 0 0 0 0 rgba(255,193,7,0); }
 }
-
-.alert-danger-animate {
-  animation: pulse-danger 1.5s infinite, blink-soft 1.5s infinite;
-}
-
-.alert-warning-animate {
-  animation: pulse-warning 2s infinite, blink-soft 2s infinite;
-}
+.alert-danger-animate  { animation: pulse-danger  1.5s infinite, blink-soft 1.5s infinite; }
+.alert-warning-animate { animation: pulse-warning 2s   infinite, blink-soft 2s   infinite; }
 </style>
-
 
 <script>
     // ── Batas Normal Ruang Server ──
@@ -37,17 +28,13 @@
     const HUM_MIN_NORMAL  = 45, HUM_MAX_NORMAL  = 60;
     const HUM_MIN_WARN    = 40, HUM_MAX_WARN    = 70;
 
-    // ── PERUBAHAN 1: Load data hari ini saja dari localStorage ──
+    // ── Load data dari localStorage ──
     const maxPoints = 20;
-
-    // Tanggal hari ini sebagai kunci: "2024-01-15"
     const hariIni = new Date().toISOString().slice(0, 10);
 
-    // Format tersimpan: { date: "2024-01-15", labels: [...], data: [...] }
     function loadFromStorage(storageKey) {
         try {
             const saved = JSON.parse(localStorage.getItem(storageKey));
-            // Buang otomatis jika bukan data hari ini
             if (!saved || saved.date !== hariIni) return { labels: [], data: [] };
             return { labels: saved.labels || [], data: saved.data || [] };
         } catch { return { labels: [], data: [] }; }
@@ -96,65 +83,58 @@
         options: { scales: { y: { min: 20, max: 100 } }, animation: false }
     });
 
-function cekAlert(suhu, hum) {
-    let html = '';
+    // ── Alert ──
+    function cekAlert(suhu, hum) {
+        let html = '';
 
-    // ── SUHU ──
-    if (suhu > TEMP_MAX_WARN) {
-        html += `<div class="alert alert-danger alert-dismissible fade show alert-danger-animate" role="alert">
-                    🔴 <strong>BAHAYA!</strong> Suhu ${suhu}°C di atas batas aman!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>`;
-    } 
-    else if (suhu < TEMP_MIN_WARN) {
-        html += `<div class="alert alert-danger alert-dismissible fade show alert-danger-animate" role="alert">
-                    🔴 <strong>BAHAYA!</strong> Suhu ${suhu}°C di bawah batas aman!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>`;
-    } 
-    else if (suhu > TEMP_MAX_NORMAL) {
-        html += `<div class="alert alert-warning alert-dismissible fade show alert-warning-animate" role="alert">
-                    ⚠️ <strong>PERINGATAN!</strong> Suhu ${suhu}°C mendekati batas atas!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>`;
-    } 
-    else if (suhu < TEMP_MIN_NORMAL) {
-        html += `<div class="alert alert-warning alert-dismissible fade show alert-warning-animate" role="alert">
-                    ⚠️ <strong>PERINGATAN!</strong> Suhu ${suhu}°C mendekati batas bawah!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>`;
+        if (suhu > TEMP_MAX_WARN) {
+            html += `<div class="alert alert-danger alert-dismissible fade show alert-danger-animate" role="alert">
+                        🔴 <strong>BAHAYA!</strong> Suhu ${suhu}°C di atas batas aman!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+        } else if (suhu < TEMP_MIN_WARN) {
+            html += `<div class="alert alert-danger alert-dismissible fade show alert-danger-animate" role="alert">
+                        🔴 <strong>BAHAYA!</strong> Suhu ${suhu}°C di bawah batas aman!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+        } else if (suhu > TEMP_MAX_NORMAL) {
+            html += `<div class="alert alert-warning alert-dismissible fade show alert-warning-animate" role="alert">
+                        ⚠️ <strong>PERINGATAN!</strong> Suhu ${suhu}°C mendekati batas atas!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+        } else if (suhu < TEMP_MIN_NORMAL) {
+            html += `<div class="alert alert-warning alert-dismissible fade show alert-warning-animate" role="alert">
+                        ⚠️ <strong>PERINGATAN!</strong> Suhu ${suhu}°C mendekati batas bawah!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+        }
+
+        if (hum > HUM_MAX_WARN) {
+            html += `<div class="alert alert-danger alert-dismissible fade show alert-danger-animate" role="alert">
+                        🔴 <strong>BAHAYA!</strong> Humidity ${hum}% di atas batas aman!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+        } else if (hum < HUM_MIN_WARN) {
+            html += `<div class="alert alert-danger alert-dismissible fade show alert-danger-animate" role="alert">
+                        🔴 <strong>BAHAYA!</strong> Humidity ${hum}% di bawah batas aman!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+        } else if (hum > HUM_MAX_NORMAL) {
+            html += `<div class="alert alert-warning alert-dismissible fade show alert-warning-animate" role="alert">
+                        ⚠️ <strong>PERINGATAN!</strong> Humidity ${hum}% mendekati batas atas!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+        } else if (hum < HUM_MIN_NORMAL) {
+            html += `<div class="alert alert-warning alert-dismissible fade show alert-warning-animate" role="alert">
+                        ⚠️ <strong>PERINGATAN!</strong> Humidity ${hum}% mendekati batas bawah!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+        }
+
+        $('#alert-section').hide().html(html).fadeIn(300);
     }
 
-    // ── HUMIDITY ──
-    if (hum > HUM_MAX_WARN) {
-        html += `<div class="alert alert-danger alert-dismissible fade show alert-danger-animate" role="alert">
-                    🔴 <strong>BAHAYA!</strong> Humidity ${hum}% di atas batas aman!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>`;
-    } 
-    else if (hum < HUM_MIN_WARN) {
-        html += `<div class="alert alert-danger alert-dismissible fade show alert-danger-animate" role="alert">
-                    🔴 <strong>BAHAYA!</strong> Humidity ${hum}% di bawah batas aman!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>`;
-    } 
-    else if (hum > HUM_MAX_NORMAL) {
-        html += `<div class="alert alert-warning alert-dismissible fade show alert-warning-animate" role="alert">
-                    ⚠️ <strong>PERINGATAN!</strong> Humidity ${hum}% mendekati batas atas!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>`;
-    } 
-    else if (hum < HUM_MIN_NORMAL) {
-        html += `<div class="alert alert-warning alert-dismissible fade show alert-warning-animate" role="alert">
-                    ⚠️ <strong>PERINGATAN!</strong> Humidity ${hum}% mendekati batas bawah!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>`;
-    }
-
-    $('#alert-section').hide().html(html).fadeIn(300);
-}
-
-    // ── PERUBAHAN 2: Simpan ke localStorage dengan tanggal ──
+    // ── Simpan localStorage ──
     function simpanKeStorage() {
         localStorage.setItem('chart_suhu_v2', JSON.stringify({
             date: hariIni, labels: labelsSuhu, data: dataSuhu
@@ -164,40 +144,53 @@ function cekAlert(suhu, hum) {
         }));
     }
 
-    // ── Realtime Update ──
+    // ════════════════════════════════════════════════════
+    // INTERVAL 1 — Card: fetch tiap 1 detik
+    // Hanya update angka di card + cekAlert
+    // ════════════════════════════════════════════════════
+    setInterval(function() {
+        $.get("{{ url('bacasuhu') }}", function(suhu) {
+            suhu = parseFloat(suhu);
+            $('#suhu').text(suhu);
+
+            $.get("{{ url('bacahumidity') }}", function(hum) {
+                hum = parseFloat(hum);
+                $('#humidity').text(hum);
+                cekAlert(suhu, hum);
+            });
+        });
+    }, 1000);
+
+    // ════════════════════════════════════════════════════
+    // INTERVAL 2 — Chart + Tabel: fetch tiap 30 menit
+    // Update grafik dan tabel riwayat
+    // ════════════════════════════════════════════════════
     setInterval(function() {
         const now = new Date().toLocaleTimeString();
 
         $.get("{{ url('bacasuhu') }}", function(suhu) {
             suhu = parseFloat(suhu);
-            $('#suhu').text(suhu);
             if (labelsSuhu.length >= maxPoints) { labelsSuhu.shift(); dataSuhu.shift(); }
             labelsSuhu.push(now);
             dataSuhu.push(suhu);
             chartSuhu.update();
-            simpanKeStorage(); // ← simpan setiap update suhu
+            simpanKeStorage();
         });
 
         $.get("{{ url('bacahumidity') }}", function(hum) {
             hum = parseFloat(hum);
-            $('#humidity').text(hum);
             if (labelsHum.length >= maxPoints) { labelsHum.shift(); dataHum.shift(); }
             labelsHum.push(now);
             dataHum.push(hum);
             chartHum.update();
-            simpanKeStorage(); // ← simpan setiap update humidity
-
-            cekAlert(parseFloat($('#suhu').text()), hum);
+            simpanKeStorage();
         });
 
-        // Auto refresh tabel
         $.get("{{ url('tabel-riwayat') }}", function(data) {
             $('#tbody-riwayat').html(data);
         });
 
-    }, 500);
-
-    // Data lama (kemarin dst) otomatis dibuang saat load karena date !== hariIni
+    }, 1800000); // ← 30 menit
 
     // ── Statistik ──
     function loadStatistik() {
