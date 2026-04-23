@@ -80,4 +80,39 @@ class MonitoringController extends Controller
         return $html;
     }
 
+    // public function chartHariIni()
+    // {
+    //     $data = Monitoring::whereDate('created_at', today())
+    //         ->orderBy('created_at')
+    //         ->get();
+
+    //     return response()->json([
+    //         'labels' => $data->map(fn($d) => $d->created_at->format('H:i')),
+    //         'temp'   => $data->pluck('temperature'),
+    //         'hum'    => $data->pluck('humidity'),
+    //     ]);
+    // }
+
+        public function chartHariIni()
+    {
+        // Ambil tanggal terakhir yang ada di database
+        $tanggalTerakhir = Monitoring::latest()->value('created_at');
+
+        if (!$tanggalTerakhir) {
+            return response()->json(['labels' => [], 'temp' => [], 'hum' => []]);
+        }
+
+        $tanggal = \Carbon\Carbon::parse($tanggalTerakhir)->toDateString();
+
+        $data = Monitoring::whereDate('created_at', $tanggal)
+            ->orderBy('created_at')
+            ->get();
+
+        return response()->json([
+            'labels' => $data->map(fn($d) => $d->created_at->format('H:i')),
+            'temp'   => $data->pluck('temperature'),
+            'hum'    => $data->pluck('humidity'),
+        ]);
+    }
+
 }

@@ -28,3 +28,6 @@ Route::get('/bacahumidity', [MonitoringController::class, 'bacahumidity']);
 Route::get('/statistik', [MonitoringController::class, 'statistik']);
 Route::get('/tabel-riwayat', [MonitoringController::class, 'tabelRiwayat']);
 
+Route::get('/chart-hari-ini', [MonitoringController::class, 'chartHariIni']);
+
+Route::get('/chart-hari-ini', [MonitoringController::class, 'chartHariIni']);

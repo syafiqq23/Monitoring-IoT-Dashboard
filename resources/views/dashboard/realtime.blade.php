@@ -28,35 +28,14 @@
     const HUM_MIN_NORMAL  = 45, HUM_MAX_NORMAL  = 60;
     const HUM_MIN_WARN    = 40, HUM_MAX_WARN    = 70;
 
-    // ── Load data dari localStorage ──
-    const maxPoints = 20;
-    const hariIni = new Date().toISOString().slice(0, 10);
-
-    function loadFromStorage(storageKey) {
-        try {
-            const saved = JSON.parse(localStorage.getItem(storageKey));
-            if (!saved || saved.date !== hariIni) return { labels: [], data: [] };
-            return { labels: saved.labels || [], data: saved.data || [] };
-        } catch { return { labels: [], data: [] }; }
-    }
-
-    const suhuStore  = loadFromStorage('chart_suhu_v2');
-    const humStore   = loadFromStorage('chart_hum_v2');
-
-    const labelsSuhu = suhuStore.labels;
-    const dataSuhu   = suhuStore.data;
-    const labelsHum  = humStore.labels;
-    const dataHum    = humStore.data;
-
-    // ── Setup Chart ──
-    const ctxSuhu = document.getElementById('chartSuhu').getContext('2d');
-    const chartSuhu = new Chart(ctxSuhu, {
+    // ── Setup Chart (kosong dulu, diisi setelah fetch) ──
+    const chartSuhu = new Chart(document.getElementById('chartSuhu').getContext('2d'), {
         type: 'line',
         data: {
-            labels: labelsSuhu,
+            labels: [],
             datasets: [{
                 label: 'Temperature (°C)',
-                data: dataSuhu,
+                data: [],
                 borderColor: '#FFC107',
                 backgroundColor: 'rgba(255,193,7,0.1)',
                 tension: 0.4,
@@ -66,14 +45,13 @@
         options: { scales: { y: { min: 10, max: 40 } }, animation: false }
     });
 
-    const ctxHum = document.getElementById('chartHumidity').getContext('2d');
-    const chartHum = new Chart(ctxHum, {
+    const chartHum = new Chart(document.getElementById('chartHumidity').getContext('2d'), {
         type: 'line',
         data: {
-            labels: labelsHum,
+            labels: [],
             datasets: [{
                 label: 'Humidity (%)',
-                data: dataHum,
+                data: [],
                 borderColor: '#17a2b8',
                 backgroundColor: 'rgba(23,162,184,0.1)',
                 tension: 0.4,
@@ -82,6 +60,26 @@
         },
         options: { scales: { y: { min: 20, max: 100 } }, animation: false }
     });
+
+    // ── Fetch chart dari database ──
+    // Dipanggil saat halaman dibuka + tiap 30 menit
+    function muatChart() {
+        $.get("{{ url('chart-hari-ini') }}", function(res) {
+            chartSuhu.data.labels            = res.labels;
+            chartSuhu.data.datasets[0].data  = res.temp;
+            chartSuhu.update();
+
+            chartHum.data.labels             = res.labels;
+            chartHum.data.datasets[0].data   = res.hum;
+            chartHum.update();
+        });
+    }
+
+    // Load saat halaman pertama dibuka
+    muatChart();
+
+    // Refresh chart tiap 30 menit
+    setInterval(muatChart, 2000);
 
     // ── Alert ──
     function cekAlert(suhu, hum) {
@@ -134,20 +132,7 @@
         $('#alert-section').hide().html(html).fadeIn(300);
     }
 
-    // ── Simpan localStorage ──
-    function simpanKeStorage() {
-        localStorage.setItem('chart_suhu_v2', JSON.stringify({
-            date: hariIni, labels: labelsSuhu, data: dataSuhu
-        }));
-        localStorage.setItem('chart_hum_v2', JSON.stringify({
-            date: hariIni, labels: labelsHum, data: dataHum
-        }));
-    }
-
-    // ════════════════════════════════════════════════════
-    // INTERVAL 1 — Card: fetch tiap 1 detik
-    // Hanya update angka di card + cekAlert
-    // ════════════════════════════════════════════════════
+    // ── INTERVAL 1 — Card: fetch tiap 1 detik ──
     setInterval(function() {
         $.get("{{ url('bacasuhu') }}", function(suhu) {
             suhu = parseFloat(suhu);
@@ -161,36 +146,12 @@
         });
     }, 1000);
 
-    // ════════════════════════════════════════════════════
-    // INTERVAL 2 — Chart + Tabel: fetch tiap 30 menit
-    // Update grafik dan tabel riwayat
-    // ════════════════════════════════════════════════════
+    // ── INTERVAL 2 — Tabel: refresh tiap 30 detik ──
     setInterval(function() {
-        const now = new Date().toLocaleTimeString();
-
-        $.get("{{ url('bacasuhu') }}", function(suhu) {
-            suhu = parseFloat(suhu);
-            if (labelsSuhu.length >= maxPoints) { labelsSuhu.shift(); dataSuhu.shift(); }
-            labelsSuhu.push(now);
-            dataSuhu.push(suhu);
-            chartSuhu.update();
-            simpanKeStorage();
-        });
-
-        $.get("{{ url('bacahumidity') }}", function(hum) {
-            hum = parseFloat(hum);
-            if (labelsHum.length >= maxPoints) { labelsHum.shift(); dataHum.shift(); }
-            labelsHum.push(now);
-            dataHum.push(hum);
-            chartHum.update();
-            simpanKeStorage();
-        });
-
         $.get("{{ url('tabel-riwayat') }}", function(data) {
             $('#tbody-riwayat').html(data);
         });
-
-    }, 1800000); // ← 30 menit
+    }, 2000);
 
     // ── Statistik ──
     function loadStatistik() {
