@@ -146,12 +146,12 @@
         });
     }, 1000);
 
-    // ── INTERVAL 2 — Tabel: refresh tiap 30 detik ──
+    // ── INTERVAL 2 — Tabel: refresh tiap 1 menit ──
     setInterval(function() {
         $.get("{{ url('tabel-riwayat') }}", function(data) {
             $('#tbody-riwayat').html(data);
         });
-    }, 2000);
+    }, 60000);
 
     // ── Statistik ──
     function loadStatistik() {
