@@ -79,7 +79,7 @@
     muatChart();
 
     // Refresh chart tiap 30 menit
-    setInterval(muatChart, 2000);
+    setInterval(muatChart, 3600000);
 
     // ── Alert ──
     function cekAlert(suhu, hum) {

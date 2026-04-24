@@ -18,17 +18,6 @@ class MonitoringController extends Controller
         return $data ? $data->humidity : 0;
     }
 
-    public function simpan()
-    {
-        Monitoring::create([
-            'device_id'   => request('device_id', 'default'),
-            'temperature' => request('temperature'),
-            'humidity'    => request('humidity'),
-        ]);
-
-        return response()->json(['status' => 'ok']);
-    }
-
         public function statistik()
     {
         $start = request('start', now()->format('Y-m-d'));
@@ -48,22 +37,7 @@ class MonitoringController extends Controller
             'max_hum'  => (clone $data)->max('humidity'),
         ]);
     }
-
-    public function chartHarian(Request $request)
-{
-    $tanggal = $request->tanggal ?? now()->toDateString();
-
-    $data = Control::whereDate('created_at', $tanggal)
-        ->orderBy('created_at')
-        ->get();
-
-    return response()->json([
-        'labels' => $data->map(fn($d) => $d->created_at->format('H:i')),
-        'temp'   => $data->pluck('temperature'),
-        'hum'    => $data->pluck('humidity'),
-    ]);
-}
-
+    
     public function tabelRiwayat()
     {
         $data = Monitoring::latest()->take(10)->get();
@@ -80,9 +54,31 @@ class MonitoringController extends Controller
         return $html;
     }
 
-    // public function chartHariIni()
+    public function chartHariIni()
+    {
+        $data = Monitoring::whereDate('created_at', today())
+            ->orderBy('created_at')
+            ->get();
+
+        return response()->json([
+            'labels' => $data->map(fn($d) => $d->created_at->format('H:i')),
+            'temp'   => $data->pluck('temperature'),
+            'hum'    => $data->pluck('humidity'),
+        ]);
+    }
+
+    //     public function chartHariIni()
     // {
-    //     $data = Monitoring::whereDate('created_at', today())
+    //     // Ambil tanggal terakhir yang ada di database
+    //     $tanggalTerakhir = Monitoring::latest()->value('created_at');
+
+    //     if (!$tanggalTerakhir) {
+    //         return response()->json(['labels' => [], 'temp' => [], 'hum' => []]);
+    //     }
+
+    //     $tanggal = \Carbon\Carbon::parse($tanggalTerakhir)->toDateString();
+
+    //     $data = Monitoring::whereDate('created_at', $tanggal)
     //         ->orderBy('created_at')
     //         ->get();
 
@@ -93,26 +89,19 @@ class MonitoringController extends Controller
     //     ]);
     // }
 
-        public function chartHariIni()
-    {
-        // Ambil tanggal terakhir yang ada di database
-        $tanggalTerakhir = Monitoring::latest()->value('created_at');
+    //     public function chartHariIni()
+    // {
+    //     $tanggal = '2026-04-01'; // ← hardcode sementara untuk test
 
-        if (!$tanggalTerakhir) {
-            return response()->json(['labels' => [], 'temp' => [], 'hum' => []]);
-        }
+    //     $data = Monitoring::whereDate('created_at', $tanggal)
+    //         ->orderBy('created_at')
+    //         ->get();
 
-        $tanggal = \Carbon\Carbon::parse($tanggalTerakhir)->toDateString();
-
-        $data = Monitoring::whereDate('created_at', $tanggal)
-            ->orderBy('created_at')
-            ->get();
-
-        return response()->json([
-            'labels' => $data->map(fn($d) => $d->created_at->format('H:i')),
-            'temp'   => $data->pluck('temperature'),
-            'hum'    => $data->pluck('humidity'),
-        ]);
-    }
+    //     return response()->json([
+    //         'labels' => $data->map(fn($d) => $d->created_at->format('H:i')),
+    //         'temp'   => $data->pluck('temperature'),
+    //         'hum'    => $data->pluck('humidity'),
+    //     ]);
+    // }
 
 }
