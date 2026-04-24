@@ -79,7 +79,7 @@
     muatChart();
 
     // Refresh chart tiap 30 menit
-    setInterval(muatChart, 3600000);
+    setInterval(muatChart, 60000);
 
     // ── Alert ──
     function cekAlert(suhu, hum) {
@@ -132,7 +132,7 @@
         $('#alert-section').hide().html(html).fadeIn(300);
     }
 
-    // ── INTERVAL 1 — Card: fetch tiap 1 detik ──
+    // ── INTERVAL 1 — Card: fetch tiap 60 detik ──
     setInterval(function() {
         $.get("{{ url('bacasuhu') }}", function(suhu) {
             suhu = parseFloat(suhu);
